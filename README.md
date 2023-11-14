@@ -1,3 +1,20 @@
+# hello-ruoyi-cloud
+
+#### 介绍
+在若依开源前后端分离版的基础上增加租户概念，实现saas平台
+
+* [前后端未分离版本](https://gitee.com/xiaoqiangBUG/hello-ruoyi-saas)
+* [前后端分离版本](https://gitee.com/xiaoqiangBUG/hello-ruoyi-vue)
+
+#### 软件架构
+在若依权限管理系统前后端分离版本上增加扩展功能   
+1.扩展为SAAS平台，支持多租户管理
+
+#### 使用说明
+1.克隆本项目  
+ 
+
+
 <p align="center">
 	<img alt="logo" src="https://oscimg.oschina.net/oscnet/up-b99b286755aef70355a7084753f89cdb7c9.png">
 </p>
