@@ -13,11 +13,13 @@ spring:
   cloud:
     nacos:
       discovery:
+        namespace: 8953602c-5927-44b6-9df8-f537cc4b546c
         # 服务注册地址
-        server-addr: 127.0.0.1:8848
+        server-addr: 192.168.56.101:30848
       config:
+        namespace: 8953602c-5927-44b6-9df8-f537cc4b546c
         # 配置中心地址
-        server-addr: 127.0.0.1:8848
+        server-addr: 192.168.56.101:30848
         # 配置文件格式
         file-extension: yml
         # 共享配置
