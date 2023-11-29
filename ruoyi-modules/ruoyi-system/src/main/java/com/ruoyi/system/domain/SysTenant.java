@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * 租户信息对象 sys_tenant
  * 
@@ -109,7 +111,8 @@ public class SysTenant extends BaseEntity
         this.roleId = roleId;
     }
 
-    public Long getRoleId() 
+    @NotBlank(message = "角色不能为空")
+    public Long getRoleId()
     {
         return roleId;
     }

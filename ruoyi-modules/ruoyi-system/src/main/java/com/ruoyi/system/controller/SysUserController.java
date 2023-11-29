@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.domain.SysTenant;
+import com.ruoyi.system.service.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -32,12 +35,6 @@ import com.ruoyi.system.api.domain.SysDept;
 import com.ruoyi.system.api.domain.SysRole;
 import com.ruoyi.system.api.domain.SysUser;
 import com.ruoyi.system.api.model.LoginUser;
-import com.ruoyi.system.service.ISysConfigService;
-import com.ruoyi.system.service.ISysDeptService;
-import com.ruoyi.system.service.ISysPermissionService;
-import com.ruoyi.system.service.ISysPostService;
-import com.ruoyi.system.service.ISysRoleService;
-import com.ruoyi.system.service.ISysUserService;
 
 /**
  * 用户信息
@@ -65,6 +62,9 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysConfigService configService;
+
+    @Autowired
+    private ISysTenantService sysTenantService;
 
     /**
      * 获取用户列表
@@ -119,6 +119,11 @@ public class SysUserController extends BaseController
         {
             return R.fail("用户名或密码错误");
         }
+        SysTenant tenant = sysTenantService.selectSysTenantByTenantId(sysUser.getTenantId());
+        if(StringUtils.isNull(tenant) || tenant.getStatus().equals("1")){
+            return R.fail("用户所在租户失效或已经停用");
+        }
+
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(sysUser);
         // 权限集合
@@ -211,7 +216,9 @@ public class SysUserController extends BaseController
         {
             return error("新增用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
-        user.setCreateBy(SecurityUtils.getUsername());
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        user.setTenantId(loginUser.getTenantid());
+        user.setCreateBy(loginUser.getUsername());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         return toAjax(userService.insertUser(user));
     }

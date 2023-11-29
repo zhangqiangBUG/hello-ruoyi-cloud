@@ -58,4 +58,12 @@ public interface SysTenantMapper
      * @return 结果
      */
     public int deleteSysTenantByTenantIds(Long[] tenantIds);
+
+    /**
+     * 校验租户名称是否唯一
+     *
+     * @param tenantName 租户名称
+     * @return 结果
+     */
+    public SysTenant checkTenantNameUnique(String tenantName);
 }

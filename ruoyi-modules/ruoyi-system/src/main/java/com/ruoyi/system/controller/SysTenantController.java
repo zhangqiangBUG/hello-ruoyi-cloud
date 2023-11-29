@@ -1,14 +1,13 @@
 package com.ruoyi.system.controller;
 
 import java.util.List;
-import java.io.IOException;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import com.ruoyi.system.api.domain.SysRole;
-import com.ruoyi.system.api.domain.SysUser;
+import com.ruoyi.system.api.model.LoginUser;
 import com.ruoyi.system.service.ISysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -94,6 +93,9 @@ public class SysTenantController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody SysTenant sysTenant)
     {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        sysTenant.setParentId(loginUser.getTenantid());
+        sysTenant.setCreateBy(loginUser.getUsername());
         return toAjax(sysTenantService.insertSysTenant(sysTenant));
     }
 

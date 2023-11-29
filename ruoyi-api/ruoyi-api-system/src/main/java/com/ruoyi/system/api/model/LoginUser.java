@@ -24,6 +24,11 @@ public class LoginUser implements Serializable
     private Long userid;
 
     /**
+     * 租户id
+     */
+    private Long tenantid;
+
+    /**
      * 用户名
      */
     private String username;
@@ -76,6 +81,14 @@ public class LoginUser implements Serializable
     public void setUserid(Long userid)
     {
         this.userid = userid;
+    }
+
+    public Long getTenantid() {
+        return tenantid;
+    }
+
+    public void setTenantid(Long tenantid) {
+        this.tenantid = tenantid;
     }
 
     public String getUsername()

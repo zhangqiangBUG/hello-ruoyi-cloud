@@ -122,4 +122,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{tenantId}
         </foreach>
     </delete>
+
+    <select id="checkTenantNameUnique" parameterType="String" resultMap="SysTenantResult">
+        <include refid="selectSysTenantVo"/>
+        where tenant_name = #{tenantName} and del_flag = '0' limit 1
+    </select>
+
 </mapper>
