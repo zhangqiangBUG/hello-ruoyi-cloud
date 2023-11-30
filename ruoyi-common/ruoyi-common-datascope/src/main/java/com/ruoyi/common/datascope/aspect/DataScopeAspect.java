@@ -74,7 +74,7 @@ public class DataScopeAspect
             {
                 String permission = StringUtils.defaultIfEmpty(controllerDataScope.permission(), SecurityContextHolder.getPermission());
                 dataScopeFilter(joinPoint, currentUser, controllerDataScope.deptAlias(),
-                        controllerDataScope.userAlias(), permission);
+                        controllerDataScope.userAlias(), permission,controllerDataScope.subModule());
             }
         }
     }
@@ -87,65 +87,112 @@ public class DataScopeAspect
      * @param deptAlias 部门别名
      * @param userAlias 用户别名
      * @param permission 权限字符
+     * @param subModule 是否为独立库
      */
-    public static void dataScopeFilter(JoinPoint joinPoint, SysUser user, String deptAlias, String userAlias, String permission)
+    public static void dataScopeFilter(JoinPoint joinPoint, SysUser user, String deptAlias, String userAlias, String permission,boolean subModule)
     {
         StringBuilder sqlString = new StringBuilder();
         List<String> conditions = new ArrayList<String>();
 
+        if(StringUtils.isBlank(userAlias)){
+            userAlias = subModule?"create_by":"u";
+        }
+        if(StringUtils.isBlank(deptAlias)){
+            deptAlias = subModule?"ancestors":"d";
+        }
+
         for (SysRole role : user.getRoles())
         {
             String dataScope = role.getDataScope();
+            // 非自定数据权限
             if (!DATA_SCOPE_CUSTOM.equals(dataScope) && conditions.contains(dataScope))
             {
                 continue;
             }
+            // 是否有菜单权限
             if (StringUtils.isNotEmpty(permission) && StringUtils.isNotEmpty(role.getPermissions())
                     && !StringUtils.containsAny(role.getPermissions(), Convert.toStrArray(permission)))
             {
                 continue;
             }
-            if (DATA_SCOPE_ALL.equals(dataScope))
-            {
-                sqlString = new StringBuilder();
-                conditions.add(dataScope);
-                break;
-            }
-            else if (DATA_SCOPE_CUSTOM.equals(dataScope))
-            {
-                sqlString.append(StringUtils.format(
-                        " OR {}.dept_id IN ( SELECT dept_id FROM sys_role_dept WHERE role_id = {} ) ", deptAlias,
-                        role.getRoleId()));
-            }
-            else if (DATA_SCOPE_DEPT.equals(dataScope))
-            {
-                sqlString.append(StringUtils.format(" OR {}.dept_id = {} ", deptAlias, user.getDeptId()));
-            }
-            else if (DATA_SCOPE_DEPT_AND_CHILD.equals(dataScope))
-            {
-                sqlString.append(StringUtils.format(
-                        " OR {}.dept_id IN ( SELECT dept_id FROM sys_dept WHERE dept_id = {} or find_in_set( {} , ancestors ) )",
-                        deptAlias, user.getDeptId(), user.getDeptId()));
-            }
-            else if (DATA_SCOPE_SELF.equals(dataScope))
-            {
-                if (StringUtils.isNotBlank(userAlias))
+
+            if(subModule){
+                // 全部数据权限
+                if (DATA_SCOPE_ALL.equals(dataScope))
                 {
-                    sqlString.append(StringUtils.format(" OR {}.user_id = {} ", userAlias, user.getUserId()));
+                    sqlString = new StringBuilder();
+                    conditions.add(dataScope);
+                    break;
                 }
-                else
+                // 自定数据权限
+                else if (DATA_SCOPE_CUSTOM.equals(dataScope))
                 {
-                    // 数据权限为仅本人且没有userAlias别名不查询任何数据
-                    sqlString.append(StringUtils.format(" OR {}.dept_id = 0 ", deptAlias));
+                    sqlString.append(StringUtils.format(
+                            " OR SUBSTRING_INDEX({},',',-1) IN ({}) ", deptAlias,
+                            role.getDeptIds()));
+                }
+                else if (DATA_SCOPE_DEPT.equals(dataScope))
+                {
+                    sqlString.append(StringUtils.format(" OR {} = {} ", deptAlias, user.getDept().getAncestors()+","+user.getDeptId()));
+                }
+                else if (DATA_SCOPE_DEPT_AND_CHILD.equals(dataScope))
+                {
+                    sqlString.append(StringUtils.format(
+                            " OR find_in_set( {} , {} ) ",
+                            user.getDeptId(),deptAlias));
+                }
+                else if (DATA_SCOPE_SELF.equals(dataScope))
+                {
+                    sqlString.append(StringUtils.format(" OR {} = {} ", userAlias, user.getUserId()));
+                }
+            }else{
+                if (DATA_SCOPE_ALL.equals(dataScope))
+                {
+                    sqlString = new StringBuilder();
+                    conditions.add(dataScope);
+                    break;
+                }
+                else if (DATA_SCOPE_CUSTOM.equals(dataScope))
+                {
+                    sqlString.append(StringUtils.format(
+                            " OR {}.dept_id IN ( SELECT dept_id FROM sys_role_dept WHERE role_id = {} ) ", deptAlias,
+                            role.getRoleId()));
+                }
+                else if (DATA_SCOPE_DEPT.equals(dataScope))
+                {
+                    sqlString.append(StringUtils.format(" OR {}.dept_id = {} ", deptAlias, user.getDeptId()));
+                }
+                else if (DATA_SCOPE_DEPT_AND_CHILD.equals(dataScope))
+                {
+                    sqlString.append(StringUtils.format(
+                            " OR {}.dept_id IN ( SELECT dept_id FROM sys_dept WHERE dept_id = {} or find_in_set( {} , ancestors ) )",
+                            deptAlias, user.getDeptId(), user.getDeptId()));
+                }
+                else if (DATA_SCOPE_SELF.equals(dataScope))
+                {
+                    if (StringUtils.isNotBlank(userAlias))
+                    {
+                        sqlString.append(StringUtils.format(" OR {}.user_id = {} ", userAlias, user.getUserId()));
+                    }
+                    else
+                    {
+                        // 数据权限为仅本人且没有userAlias别名不查询任何数据
+                        sqlString.append(StringUtils.format(" OR {}.dept_id = 0 ", deptAlias));
+                    }
                 }
             }
+
             conditions.add(dataScope);
         }
 
         // 多角色情况下，所有角色都不包含传递过来的权限字符，这个时候sqlString也会为空，所以要限制一下,不查询任何数据
         if (StringUtils.isEmpty(conditions))
         {
-            sqlString.append(StringUtils.format(" OR {}.dept_id = 0 ", deptAlias));
+            if(subModule){
+                sqlString.append(StringUtils.format(" OR {} = 0 ", deptAlias));
+            }else{
+                sqlString.append(StringUtils.format(" OR {}.dept_id = 0 ", deptAlias));
+            }
         }
 
         if (StringUtils.isNotBlank(sqlString.toString()))

@@ -23,14 +23,16 @@ public class SysRecordLogService
     /**
      * 记录登录信息
      * 
+     * @param tenantId 租户ID
      * @param username 用户名
      * @param status 状态
      * @param message 消息内容
      * @return
      */
-    public void recordLogininfor(String username, String status, String message)
+    public void recordLogininfor(Long tenantId,String username, String status, String message)
     {
         SysLogininfor logininfor = new SysLogininfor();
+        logininfor.setTenantId(tenantId);
         logininfor.setUserName(username);
         logininfor.setIpaddr(IpUtils.getIpAddr());
         logininfor.setMsg(message);

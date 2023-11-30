@@ -53,14 +53,14 @@ public class SysPasswordService
         if (retryCount >= Integer.valueOf(maxRetryCount).intValue())
         {
             String errMsg = String.format("密码输入错误%s次，帐户锁定%s分钟", maxRetryCount, lockTime);
-            recordLogService.recordLogininfor(username, Constants.LOGIN_FAIL,errMsg);
+            recordLogService.recordLogininfor(user.getTenantId(),username, Constants.LOGIN_FAIL,errMsg);
             throw new ServiceException(errMsg);
         }
 
         if (!matches(user, password))
         {
             retryCount = retryCount + 1;
-            recordLogService.recordLogininfor(username, Constants.LOGIN_FAIL, String.format("密码输入错误%s次", retryCount));
+            recordLogService.recordLogininfor(user.getTenantId(),username, Constants.LOGIN_FAIL, String.format("密码输入错误%s次", retryCount));
             redisService.setCacheObject(getCacheKey(username), retryCount, lockTime, TimeUnit.MINUTES);
             throw new ServiceException("用户不存在/密码错误");
         }
