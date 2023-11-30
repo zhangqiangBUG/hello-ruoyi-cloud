@@ -2,6 +2,9 @@ package com.ruoyi.job.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +41,9 @@ public class SysJobLogController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysJobLog sysJobLog)
     {
+        if(StringUtils.isNull(sysJobLog.getTenantId())){
+            sysJobLog.setTenantId(SecurityUtils.getLoginUser().getTenantid());
+        }
         startPage();
         List<SysJobLog> list = jobLogService.selectJobLogList(sysJobLog);
         return getDataTable(list);
@@ -51,6 +57,9 @@ public class SysJobLogController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysJobLog sysJobLog)
     {
+        if(StringUtils.isNull(sysJobLog.getTenantId())){
+            sysJobLog.setTenantId(SecurityUtils.getLoginUser().getTenantid());
+        }
         List<SysJobLog> list = jobLogService.selectJobLogList(sysJobLog);
         ExcelUtil<SysJobLog> util = new ExcelUtil<SysJobLog>(SysJobLog.class);
         util.exportExcel(response, list, "调度日志");

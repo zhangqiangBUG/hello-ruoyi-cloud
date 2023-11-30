@@ -2,6 +2,8 @@ package com.ruoyi.system.domain;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import com.ruoyi.common.core.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.web.domain.BaseEntity;
@@ -18,6 +20,10 @@ public class SysNotice extends BaseEntity
 
     /** 公告ID */
     private Long noticeId;
+
+    /** 租户ID */
+    @Excel(name = "租户编号", type = Excel.Type.IMPORT)
+    private Long tenantId;
 
     /** 公告标题 */
     private String noticeTitle;
@@ -39,6 +45,14 @@ public class SysNotice extends BaseEntity
     public void setNoticeId(Long noticeId)
     {
         this.noticeId = noticeId;
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 
     public void setNoticeTitle(String noticeTitle)
@@ -88,6 +102,7 @@ public class SysNotice extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("noticeId", getNoticeId())
+            .append("tenantId", getTenantId())
             .append("noticeTitle", getNoticeTitle())
             .append("noticeType", getNoticeType())
             .append("noticeContent", getNoticeContent())

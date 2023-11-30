@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.api.model.LoginUser;
 import org.apache.commons.lang3.ArrayUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -97,7 +99,12 @@ public class LogAspect
             {
                 operLog.setOperName(username);
             }
-
+            LoginUser loginUser = SecurityUtils.getLoginUser();
+            if(StringUtils.isNotNull(loginUser)){
+                operLog.setTenantId(loginUser.getTenantid());
+            }else{
+                operLog.setTenantId(1l); //默认
+            }
             if (e != null)
             {
                 operLog.setStatus(BusinessStatus.FAIL.ordinal());

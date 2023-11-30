@@ -2,6 +2,8 @@ package com.ruoyi.job.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.system.api.model.LoginUser;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,6 +49,9 @@ public class SysJobController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysJob sysJob)
     {
+        if(StringUtils.isNull(sysJob.getTenantId())){
+            sysJob.setTenantId(SecurityUtils.getLoginUser().getTenantid());
+        }
         startPage();
         List<SysJob> list = jobService.selectJobList(sysJob);
         return getDataTable(list);
@@ -60,6 +65,9 @@ public class SysJobController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysJob sysJob)
     {
+        if(StringUtils.isNull(sysJob.getTenantId())){
+            sysJob.setTenantId(SecurityUtils.getLoginUser().getTenantid());
+        }
         List<SysJob> list = jobService.selectJobList(sysJob);
         ExcelUtil<SysJob> util = new ExcelUtil<SysJob>(SysJob.class);
         util.exportExcel(response, list, "定时任务");
@@ -107,6 +115,8 @@ public class SysJobController extends BaseController
         {
             return error("新增任务'" + job.getJobName() + "'失败，目标字符串不在白名单内");
         }
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        job.setTenantId(loginUser.getTenantid());
         job.setCreateBy(SecurityUtils.getUsername());
         return toAjax(jobService.insertJob(job));
     }

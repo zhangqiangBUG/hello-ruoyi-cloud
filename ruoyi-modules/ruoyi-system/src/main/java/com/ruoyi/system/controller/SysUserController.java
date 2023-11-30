@@ -334,6 +334,8 @@ public class SysUserController extends BaseController
     @GetMapping("/deptTree")
     public AjaxResult deptTree(SysDept dept)
     {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        dept.setTenantId(loginUser.getTenantid());
         return success(deptService.selectDeptTreeList(dept));
     }
 }

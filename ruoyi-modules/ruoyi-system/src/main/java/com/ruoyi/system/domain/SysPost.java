@@ -22,6 +22,10 @@ public class SysPost extends BaseEntity
     @Excel(name = "岗位序号", cellType = ColumnType.NUMERIC)
     private Long postId;
 
+    /** 租户ID */
+    @Excel(name = "租户编号", type = Excel.Type.IMPORT)
+    private Long tenantId;
+
     /** 岗位编码 */
     @Excel(name = "岗位编码")
     private String postCode;
@@ -49,6 +53,14 @@ public class SysPost extends BaseEntity
     public void setPostId(Long postId)
     {
         this.postId = postId;
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 
     @NotBlank(message = "岗位编码不能为空")
@@ -110,6 +122,7 @@ public class SysPost extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("postId", getPostId())
+            .append("tenantId", getTenantId())
             .append("postCode", getPostCode())
             .append("postName", getPostName())
             .append("postSort", getPostSort())

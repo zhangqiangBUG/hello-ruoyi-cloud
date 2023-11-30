@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,24 +44,31 @@ public class SysUserOnlineController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(String ipaddr, String userName)
     {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        boolean isAdmin = false;
+        if(loginUser.getSysUser().isAdmin()){
+            isAdmin = true;
+        }
+        Long tenantId = loginUser.getTenantid();
         Collection<String> keys = redisService.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
         List<SysUserOnline> userOnlineList = new ArrayList<SysUserOnline>();
         for (String key : keys)
         {
             LoginUser user = redisService.getCacheObject(key);
-            if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName))
+            boolean isTenant = isAdmin || tenantId.equals(user.getTenantid());
+            if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName) && isTenant)
             {
                 userOnlineList.add(userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
             }
-            else if (StringUtils.isNotEmpty(ipaddr))
+            else if (StringUtils.isNotEmpty(ipaddr) && isTenant)
             {
                 userOnlineList.add(userOnlineService.selectOnlineByIpaddr(ipaddr, user));
             }
-            else if (StringUtils.isNotEmpty(userName))
+            else if (StringUtils.isNotEmpty(userName) && isTenant)
             {
                 userOnlineList.add(userOnlineService.selectOnlineByUserName(userName, user));
             }
-            else
+            else if(isTenant)
             {
                 userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
             }

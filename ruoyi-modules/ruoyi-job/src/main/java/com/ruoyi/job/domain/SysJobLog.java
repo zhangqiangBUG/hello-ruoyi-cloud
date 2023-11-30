@@ -19,6 +19,10 @@ public class SysJobLog extends BaseEntity
     @Excel(name = "日志序号")
     private Long jobLogId;
 
+    /** 租户ID */
+    @Excel(name = "租户编号", type = Excel.Type.IMPORT)
+    private Long tenantId;
+
     /** 任务名称 */
     @Excel(name = "任务名称")
     private String jobName;
@@ -57,6 +61,14 @@ public class SysJobLog extends BaseEntity
     public void setJobLogId(Long jobLogId)
     {
         this.jobLogId = jobLogId;
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 
     public String getJobName()
@@ -143,6 +155,7 @@ public class SysJobLog extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("jobLogId", getJobLogId())
+            .append("tenantId", getTenantId())
             .append("jobName", getJobName())
             .append("jobGroup", getJobGroup())
             .append("jobMessage", getJobMessage())

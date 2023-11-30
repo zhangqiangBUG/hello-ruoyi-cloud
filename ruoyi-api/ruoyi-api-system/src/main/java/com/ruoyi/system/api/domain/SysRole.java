@@ -23,6 +23,10 @@ public class SysRole extends BaseEntity
     @Excel(name = "角色序号", cellType = ColumnType.NUMERIC)
     private Long roleId;
 
+    /** 租户ID */
+    @Excel(name = "租户编号", type = Excel.Type.IMPORT)
+    private Long tenantId;
+
     /** 角色名称 */
     @Excel(name = "角色名称")
     private String roleName;
@@ -82,6 +86,14 @@ public class SysRole extends BaseEntity
     public void setRoleId(Long roleId)
     {
         this.roleId = roleId;
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 
     public boolean isAdmin()
@@ -223,6 +235,7 @@ public class SysRole extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("roleId", getRoleId())
+            .append("tenantId", getTenantId())
             .append("roleName", getRoleName())
             .append("roleKey", getRoleKey())
             .append("roleSort", getRoleSort())

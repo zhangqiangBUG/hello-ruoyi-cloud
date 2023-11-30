@@ -269,6 +269,9 @@ export default {
         nickName: [
           { required: true, message: "租户昵称不能为空", trigger: "blur" }
         ],
+        roleId: [
+          { required: true, message: "租户权限不能为空", trigger: "blur" }
+        ],
       },
       // 角色选项
       roleOptions: [],

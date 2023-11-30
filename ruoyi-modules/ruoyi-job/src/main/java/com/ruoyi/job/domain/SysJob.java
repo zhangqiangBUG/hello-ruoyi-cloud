@@ -26,6 +26,10 @@ public class SysJob extends BaseEntity
     @Excel(name = "任务序号", cellType = ColumnType.NUMERIC)
     private Long jobId;
 
+    /** 租户ID */
+    @Excel(name = "租户编号", type = Excel.Type.IMPORT)
+    private Long tenantId;
+
     /** 任务名称 */
     @Excel(name = "任务名称")
     private String jobName;
@@ -62,6 +66,14 @@ public class SysJob extends BaseEntity
     public void setJobId(Long jobId)
     {
         this.jobId = jobId;
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 
     @NotBlank(message = "任务名称不能为空")
@@ -154,6 +166,7 @@ public class SysJob extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("jobId", getJobId())
+            .append("tenantId", getTenantId())
             .append("jobName", getJobName())
             .append("jobGroup", getJobGroup())
             .append("cronExpression", getCronExpression())

@@ -1,6 +1,8 @@
 package com.ruoyi.system.controller;
 
 import java.util.List;
+
+import com.ruoyi.system.api.model.LoginUser;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -42,6 +44,9 @@ public class SysDeptController extends BaseController
     @GetMapping("/list")
     public AjaxResult list(SysDept dept)
     {
+        if(StringUtils.isNull(dept.getTenantId())){
+            dept.setTenantId(SecurityUtils.getLoginUser().getTenantid());
+        }
         List<SysDept> depts = deptService.selectDeptList(dept);
         return success(depts);
     }
@@ -81,6 +86,8 @@ public class SysDeptController extends BaseController
         {
             return error("新增部门'" + dept.getDeptName() + "'失败，部门名称已存在");
         }
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        dept.setTenantId(loginUser.getTenantid());
         dept.setCreateBy(SecurityUtils.getUsername());
         return toAjax(deptService.insertDept(dept));
     }

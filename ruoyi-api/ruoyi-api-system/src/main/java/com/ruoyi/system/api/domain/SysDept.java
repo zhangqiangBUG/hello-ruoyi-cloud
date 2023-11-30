@@ -6,6 +6,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.ruoyi.common.core.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.web.domain.BaseEntity;
@@ -24,6 +26,10 @@ public class SysDept extends BaseEntity
 
     /** 父部门ID */
     private Long parentId;
+
+    /** 租户ID */
+    @Excel(name = "租户编号", type = Excel.Type.IMPORT)
+    private Long tenantId;
 
     /** 祖级列表 */
     private String ancestors;
@@ -73,6 +79,14 @@ public class SysDept extends BaseEntity
     public void setParentId(Long parentId)
     {
         this.parentId = parentId;
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 
     public String getAncestors()
@@ -186,6 +200,7 @@ public class SysDept extends BaseEntity
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("deptId", getDeptId())
             .append("parentId", getParentId())
+            .append("tenantId", getTenantId())
             .append("ancestors", getAncestors())
             .append("deptName", getDeptName())
             .append("orderNum", getOrderNum())

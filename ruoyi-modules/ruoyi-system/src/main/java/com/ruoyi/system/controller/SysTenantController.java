@@ -50,6 +50,9 @@ public class SysTenantController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysTenant sysTenant)
     {
+        if(StringUtils.isNull(sysTenant.getTenantId())){
+            sysTenant.setParentId(SecurityUtils.getLoginUser().getTenantid());
+        }
         startPage();
         List<SysTenant> list = sysTenantService.selectSysTenantList(sysTenant);
         return getDataTable(list);
@@ -63,6 +66,9 @@ public class SysTenantController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysTenant sysTenant)
     {
+        if(StringUtils.isNull(sysTenant.getTenantId())){
+            sysTenant.setParentId(SecurityUtils.getLoginUser().getTenantid());
+        }
         List<SysTenant> list = sysTenantService.selectSysTenantList(sysTenant);
         ExcelUtil<SysTenant> util = new ExcelUtil<SysTenant>(SysTenant.class);
         util.exportExcel(response, list, "租户信息数据");

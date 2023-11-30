@@ -19,6 +19,10 @@ public class SysLogininfor extends BaseEntity
     @Excel(name = "序号", cellType = ColumnType.NUMERIC)
     private Long infoId;
 
+    /** 租户ID */
+    @Excel(name = "租户编号", type = Excel.Type.IMPORT)
+    private Long tenantId;
+
     /** 用户账号 */
     @Excel(name = "用户账号")
     private String userName;
@@ -48,6 +52,14 @@ public class SysLogininfor extends BaseEntity
     public void setInfoId(Long infoId)
     {
         this.infoId = infoId;
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 
     public String getUserName()
