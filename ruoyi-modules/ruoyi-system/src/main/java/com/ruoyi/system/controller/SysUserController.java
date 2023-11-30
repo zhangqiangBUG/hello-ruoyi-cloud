@@ -73,6 +73,9 @@ public class SysUserController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(SysUser user)
     {
+        if(StringUtils.isNull(user.getTenantId())){
+            user.setTenantId(SecurityUtils.getLoginUser().getTenantid());
+        }
         startPage();
         List<SysUser> list = userService.selectUserList(user);
         return getDataTable(list);
@@ -83,6 +86,9 @@ public class SysUserController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysUser user)
     {
+        if(StringUtils.isNull(user.getTenantId())){
+            user.setTenantId(SecurityUtils.getLoginUser().getTenantid());
+        }
         List<SysUser> list = userService.selectUserList(user);
         ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
         util.exportExcel(response, list, "用户数据");
