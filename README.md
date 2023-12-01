@@ -9,11 +9,17 @@
 #### 软件架构
 在若依权限管理系统前后端分离版本上增加扩展功能   
 1.扩展为SAAS平台，支持多租户管理
+2.微服务分库时，数据权限过滤逻辑
+
+#### 微服务分库时，数据权限过滤逻辑
+1.DataScope 增加subModule参数用于区分是否为分库模式（true）
+2.分库模式时,deptAlias、userAlias则表示当前表用来过滤数据权限的字段
+3.分库模式时，需要在数据新增时，把当前创建者所在部门层级（user.getDept().getAncestors()+","+user.getDeptId()）写入需要进行数据权限过来的表中，字段自行创建（默认ancestors）。
+4.分库模式时，大数据量的表不建议使用数据权限过滤，因为此时数据库表索引失效，导致全表查询
 
 #### 使用说明
 1.克隆本项目  
  
-
 
 <p align="center">
 	<img alt="logo" src="https://oscimg.oschina.net/oscnet/up-b99b286755aef70355a7084753f89cdb7c9.png">
